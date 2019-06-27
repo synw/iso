@@ -5,7 +5,7 @@ import 'dart:async';
 class Iso {
   /// If [onDataOut] is not provided the data coming from the isolate
   /// will print to the screen by default
-  Iso(this.runFunction, {this.onDataOut = print})
+  Iso(this.runFunction, {this.onDataOut = print, this.onError})
       : _receivePort = ReceivePort(),
         _errorPort = ReceivePort() {
     onError ??= (dynamic err) => throw ("Error in isolate:\n $err");

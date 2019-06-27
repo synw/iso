@@ -1,5 +1,3 @@
-include: package:flutter/analysis_options_user.yaml
-
 analyzer:
   strong-mode:
     implicit-casts: false

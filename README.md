@@ -10,7 +10,7 @@ Run some code in an isolate and communicate with it:
    import 'dart:isolate';
    import 'package:iso/iso.dart';
 
-   void run(SendPort chan) async {
+   void run(SendPort chan) {
      int counter = 0;
      // listen for the data coming in
      Iso.onDataIn(chan, (dynamic data) {
@@ -46,7 +46,8 @@ Define a function to be run in an isolate:
    }
    ```
 
-**Important**: this must be a top level function or a static method
+**Important**: this must be a top level function or a static method. The
+function can be async if needed
 
 Initialize a runner:
 
@@ -84,7 +85,6 @@ Another option to handle this data is to listen to a channel:
      if (payload == <String, dynamic>{"status": "finished"}) {
        print("Isolate declares it has finished");
        iso.kill();
-       exit(0);
      }
    });
    ```

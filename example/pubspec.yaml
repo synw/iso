@@ -1,0 +1,10 @@
+name: iso_example
+description: An isolate runner with bidirectionnal communication.
+
+environment:
+  sdk: '>=2.2.0 <3.0.0'
+
+dependencies:
+  iso:
+    path: ../
+

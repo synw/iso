@@ -1,5 +1,7 @@
 # Iso
 
+[![pub package](https://img.shields.io/pub/v/iso.svg)](https://pub.dartlang.org/packages/iso)
+
 An isolates runner that handles bidirectionnal communication.
 
 Run some code in an isolate and communicate with it:

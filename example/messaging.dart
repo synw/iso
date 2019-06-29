@@ -22,16 +22,15 @@ void run(IsoRunner iso) async {
         print("Received integer: $data");
       else if (data is String)
         print("Received string: $data");
-      else if (data is CustomPayload) {
+      else if (data is CustomPayload)
         print("Reveived custom payload: $data");
-      } else {
+      else
         print("Unknown data type: $data");
-      }
     });
   // send messages
   int i = 0;
   while (true) {
-    await Future<dynamic>.delayed(Duration(seconds: _random.nextInt(1 << 3)));
+    await Future<dynamic>.delayed(Duration(seconds: _random.nextInt(1 << 2)));
     sendMessage(iso, i);
     i++;
   }
@@ -46,7 +45,7 @@ void main() async {
   // send messages
   int i = 0;
   while (true) {
-    await Future<dynamic>.delayed(Duration(seconds: _random.nextInt(1 << 3)));
+    await Future<dynamic>.delayed(Duration(seconds: _random.nextInt(1 << 2)));
     sendMessage(iso, i);
     i++;
   }
@@ -66,12 +65,11 @@ void sendMessage(dynamic iso, int i) {
       iso.send(i);
       break;
     case MessageType.string:
-      iso.send("A string message $i");
+      iso.send("A string $i");
       break;
     case MessageType.custom:
       final payload = CustomPayload(
-          number: i, name: "A payload", data: <String, dynamic>{"k": "v"});
+          number: i, name: "Payload $i", data: <String, dynamic>{"k": "v"});
       iso.send(payload);
-      break;
   }
 }

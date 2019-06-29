@@ -1,43 +1,52 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:isolate';
 import 'package:iso/iso.dart';
 
-void onDataOut(dynamic data) {
-  print("Data from isolate -> $data / ${data.runtimeType}");
-}
-
-void onDataIn(dynamic data) =>
+void run(IsoRunner iso) async {
+  if (iso.hasArgs) print("Arguments: ${iso.args}");
+  /*iso.onCanReceive.then((dynamic _) {
+    print("iso can receive");
+    iso.dataIn.listen((dynamic data) =>
+        print("Data received in isolate -> $data / ${data.runtimeType}"));
+  });*/
+  /*iso.initDataIn();
+  iso.dataIn.listen((dynamic data) {
     print("Data received in isolate -> $data / ${data.runtimeType}");
-
-void run(SendPort chan) async {
-  Iso.onDataIn(chan, onDataIn);
-  chan.send("Message 1");
+  });*/
+  iso.receive()
+    ..listen((dynamic data) =>
+        print("Data received in isolate -> $data / ${data.runtimeType}"));
+  iso.send("Message 1");
   await Future<dynamic>.delayed(Duration(seconds: 1));
-  chan.send(["Message 2"]);
+  iso.send(["Message 2"]);
   await Future<dynamic>.delayed(Duration(seconds: 3));
-  chan.send([1, 2, 3]);
+  iso.send([1, 2, 3]);
   await Future<dynamic>.delayed(Duration(seconds: 5));
-  chan.send("Message 4");
+  iso.send("Message 4");
   await Future<dynamic>.delayed(Duration(seconds: 1));
-  chan.send("finished");
-  //print("Making an error:");
-  //throw ("ERROR MESSAGE");
+  iso.send("finished");
 }
 
 void main() async {
   print("Creating runner");
-  var iso = Iso(run, onDataOut: onDataOut);
-  print("Running isolate");
-  iso.run();
-  await iso.onReady;
+
+  /// disable the [onDataOut] callback and use the [iso.dataOut] listener
+  final iso = Iso(run, onDataOut: null);
+  // listen to the data coming from the isolate
   iso.dataOut.listen((dynamic payload) {
     if (payload == "finished") {
       print("Isolate declares it has finished");
       iso.kill();
       exit(0);
+    } else {
+      print("Data from isolate -> $payload / ${payload.runtimeType}");
     }
   });
+  print("Running isolate");
+  iso.run(<dynamic>["arg1", "arg2"]);
+  // wait for the isolate to be ready to receive data
+  await iso.onCanReceive;
+
   await Future<dynamic>.delayed(Duration(seconds: 3));
   print("Sending data");
   iso.send([1, 2, 3]);

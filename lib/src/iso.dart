@@ -1,94 +1,97 @@
 import "dart:isolate";
 import 'dart:async';
+import 'runner.dart';
+
+/// Data processing function type
+typedef void IsoOnData(dynamic data);
 
 /// The isolate runner class
 class Iso {
   /// If [onDataOut] is not provided the data coming from the isolate
   /// will print to the screen by default
   Iso(this.runFunction, {this.onDataOut = print, this.onError})
-      : _receivePort = ReceivePort(),
-        _errorPort = ReceivePort() {
+      : _fromIsolateReceivePort = ReceivePort(),
+        _fromIsolateErrorPort = ReceivePort() {
+    onDataOut ??= (dynamic data) => null;
     onError ??= (dynamic err) => throw ("Error in isolate:\n $err");
   }
 
   /// The function to run in the isolate
-  final void Function(SendPort port) runFunction;
+  final void Function(IsoRunner) runFunction;
 
   /// The handler for the data coming from the isolate
-  Function onDataOut;
+  IsoOnData onDataOut;
 
   /// The handler for the errors coming from the isolate
-  Function onError;
+  IsoOnData onError;
 
   Isolate _isolate;
-  ReceivePort _receivePort;
-  ReceivePort _errorPort;
-  SendPort _isolateSendPort;
+  ReceivePort _fromIsolateReceivePort;
+  ReceivePort _fromIsolateErrorPort;
+  SendPort _toIsolateSendPort;
   final StreamController<dynamic> _dataOutIsolate = StreamController<dynamic>();
-  final Completer _readyCompleter = Completer<void>();
+  final Completer _isolateReadyToListenCompleter = Completer<void>();
+  bool _canReceive = false;
 
   /// A stream with the data coming out from the isolate
   Stream<dynamic> get dataOut => _dataOutIsolate.stream;
 
   /// Working state callback
-  Future get onReady => _readyCompleter.future;
+  Future get onCanReceive => _isolateReadyToListenCompleter.future;
 
-  /// Handler for the data received inside the isolate
-  static ReceivePort onDataIn(SendPort chan, Function handler) {
-    final listener = ReceivePort();
-    chan.send(listener.sendPort);
-    listener.listen((dynamic data) {
-      handler(data);
-    });
-    return listener;
-  }
-
-  /// Channel to listen for data coming in the isolate
-  static ReceivePort dataInChan(SendPort chan) {
-    final listener = ReceivePort();
-    chan.send(listener.sendPort);
-    return listener;
-  }
+  /// The state of the isolate
+  bool get canReceive => _canReceive;
 
   /// Send data to the isolate
   void send(dynamic data) {
-    assert(_isolateSendPort != null);
-    _isolateSendPort.send(data);
+    assert(_toIsolateSendPort != null);
+    _toIsolateSendPort.send(data);
   }
 
   /// Run the isolate
-  Future<void> run() async {
-    _receivePort = ReceivePort();
-    _errorPort = ReceivePort();
-    final Completer _comChanCompleter = Completer<void>();
-    _isolate = await Isolate.spawn(runFunction, _receivePort.sendPort,
-            onError: _errorPort.sendPort)
+  Future<void> run([List<dynamic> args = const <dynamic>[]]) async {
+    //print("I > run");
+    _fromIsolateReceivePort = ReceivePort();
+    _fromIsolateErrorPort = ReceivePort();
+    final Completer<void> _comChanCompleter = Completer<void>();
+    // set runner config
+    final runner = IsoRunner(chanOut: _fromIsolateReceivePort.sendPort);
+    if (args.isNotEmpty) runner.args = args;
+    // run
+    _isolate = await Isolate.spawn(runFunction, runner,
+            onError: _fromIsolateErrorPort.sendPort)
         .then((Isolate _) {
-      _receivePort.listen((dynamic data) {
-        if (_isolateSendPort == null && data is SendPort) {
-          _isolateSendPort = data;
+      _fromIsolateReceivePort.listen((dynamic data) {
+        if (_toIsolateSendPort == null && data is SendPort) {
+          _toIsolateSendPort = data;
+          //print("I > com port received $data");
           _comChanCompleter.complete();
         } else {
+          //print("I > DATA OUT $data");
           _dataOutIsolate.sink.add(data);
           onDataOut(data);
         }
       }, onError: (dynamic err) {
-        _errorPort.sendPort.send(err);
+        _fromIsolateErrorPort.sendPort.send(err);
       });
-      _errorPort.listen((dynamic err) {
+      _fromIsolateErrorPort.listen((dynamic err) {
         onError(err);
       });
+      //print("I > init data in");
+      //runner.initDataIn();
       return;
     });
-    await _comChanCompleter.future;
-    _readyCompleter.complete();
+    _comChanCompleter.future.then((_) {
+      _isolateReadyToListenCompleter.complete();
+      _canReceive = true;
+    });
   }
 
   /// Kill the isolate
   void kill() {
     if (_isolate != null) {
-      _receivePort.close();
-      _errorPort.close();
+      _fromIsolateReceivePort.close();
+      _fromIsolateErrorPort.close();
       _isolate.kill(priority: Isolate.immediate);
       _isolate = null;
     }

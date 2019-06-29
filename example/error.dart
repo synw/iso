@@ -1,8 +1,7 @@
-import 'dart:isolate';
 import 'package:iso/iso.dart';
 
-void run(SendPort chan) async {
-  chan.send('Running');
+void run(IsoRunner iso) async {
+  iso.send('Running');
   throw ("An error has occured");
 }
 

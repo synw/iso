@@ -1,0 +1,52 @@
+import 'dart:async';
+import "package:test/test.dart";
+import 'package:iso/iso.dart';
+
+void run(IsoRunner iso) {
+  int counter = 0;
+  // listen for the data coming in
+  iso.receive();
+  iso.dataIn.listen((dynamic data) {
+    counter = counter + int.parse(data.toString());
+    // send into the main thread
+    iso.send(counter);
+  });
+}
+
+void main() {
+  Iso iso;
+
+  final StreamController<int> valueLog = StreamController<int>();
+  //Stream<dynamic> requestLog;
+
+  test("constructor", () {
+    iso = Iso(run, onDataOut: (dynamic data) => print("Counter: $data"));
+    expect(iso is Iso, true);
+    expect(iso == null, false);
+  });
+
+  test("listen logs", () {
+    iso.dataOut.listen((dynamic data) {
+      valueLog.sink.add(data as int);
+    });
+  });
+
+  test("run", () async {
+    iso.run();
+    await iso.onCanReceive;
+    expect(iso.canReceive, true);
+  });
+
+  test("send", () async {
+    assert(iso.canReceive);
+    iso.send(1);
+    await Future<void>.delayed(Duration(milliseconds: 200));
+    iso.send(1);
+    await Future<void>.delayed(Duration(milliseconds: 200));
+    int i = 1;
+    valueLog.stream.listen((int v) {
+      expect(v, i);
+      i++;
+    });
+  });
+}

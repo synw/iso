@@ -75,3 +75,4 @@ build/
 
 # Coverage report
 coverage/output/
+test/.test_coverage.dart

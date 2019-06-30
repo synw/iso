@@ -1,4 +1,5 @@
 import "dart:math";
+import 'dart:io';
 import 'dart:async';
 import 'package:iso/iso.dart';
 
@@ -15,6 +16,8 @@ class CustomPayload {
   String toString() => "$number $name $data";
 }
 
+class ExitSignal {}
+
 void run(IsoRunner iso) async {
   iso.receive()
     ..listen((dynamic data) {
@@ -27,6 +30,9 @@ void run(IsoRunner iso) async {
       else
         print("Unknown data type: $data");
     });
+  // send an exist signal after 30 seconds
+  Future<dynamic>.delayed(Duration(seconds: 30))
+      .then((dynamic _) => iso.send(ExitSignal()));
   // send messages
   int i = 0;
   while (true) {
@@ -39,7 +45,16 @@ void run(IsoRunner iso) async {
 void main() async {
   final iso = Iso(run, onDataOut: null)..run();
   // listen
-  iso.dataOut.listen((dynamic data) => print(" -> From iso : $data"));
+  iso.dataOut.listen((dynamic data) {
+    switch (data is ExitSignal) {
+      case false:
+        print(" -> From iso : $data");
+        break;
+      case true:
+        print("Exit signal received, quitting");
+        exit(0);
+    }
+  });
   // get ready
   await iso.onCanReceive;
   // send messages

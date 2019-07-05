@@ -2,7 +2,7 @@ name: iso
 description: An isolates runner that handles bidirectionnal communication. Run some code in an isolate and communicate with it
 author: synw <ansterj@gmail.com>
 homepage: https://github.com/synw/iso
-version: 0.1.0
+version: 0.2.0
 
 environment:
   sdk: '>=2.2.0 <3.0.0'

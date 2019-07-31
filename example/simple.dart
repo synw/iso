@@ -36,7 +36,7 @@ void main() async {
   iso.dataOut.listen((dynamic payload) {
     if (payload == "finished") {
       print("Isolate declares it has finished");
-      iso.kill();
+      iso.dispose();
       exit(0);
     } else {
       print("Data from isolate -> $payload / ${payload.runtimeType}");

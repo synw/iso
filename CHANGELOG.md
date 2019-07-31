@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.2
+
+Prevent killing terminated isolate
+
 ## 0.2.1
 
 - Fix in isolate dispose

@@ -4,8 +4,6 @@
 
 An isolates runner that handles bidirectionnal communication. Run some code in an isolate and communicate with it.
 
-*Warning*: this is experimental and the api may change.
-
 ## Example
 
    ```dart
@@ -61,7 +59,7 @@ Launch the function in the isolate:
    ```dart
    iso.run();
    // to terminate it:
-   iso.kill();
+   iso.dispose();
    ```
 
 The function can be run with parameters:

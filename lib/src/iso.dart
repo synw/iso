@@ -51,16 +51,14 @@ class Iso {
   /// Run the isolate
   Future<void> run([List<dynamic> args = const <dynamic>[]]) async {
     //print("I > run");
-    _fromIsolateReceivePort = ReceivePort();
-    _fromIsolateErrorPort = ReceivePort();
     final Completer<void> _comChanCompleter = Completer<void>();
     // set runner config
     final runner = IsoRunner(chanOut: _fromIsolateReceivePort.sendPort);
     if (args.isNotEmpty) runner.args = args;
     // run
-    _isolate = await Isolate.spawn(runFunction, runner,
-            onError: _fromIsolateErrorPort.sendPort)
-        .then((Isolate _) {
+    Isolate.spawn(runFunction, runner, onError: _fromIsolateErrorPort.sendPort)
+        .then((Isolate _is) {
+      _isolate = _is;
       _fromIsolateReceivePort.listen((dynamic data) {
         if (_toIsolateSendPort == null && data is SendPort) {
           _toIsolateSendPort = data;
@@ -89,12 +87,11 @@ class Iso {
 
   /// Kill the isolate
   void kill() {
-    if (_isolate != null) {
-      _fromIsolateReceivePort.close();
-      _fromIsolateErrorPort.close();
-      _isolate.kill(priority: Isolate.immediate);
-      _isolate = null;
-    }
+    //print("Killing $_isolate");
+    _fromIsolateReceivePort.close();
+    _fromIsolateErrorPort.close();
+    _isolate.kill(priority: Isolate.immediate);
+    _isolate = null;
   }
 
   /// Cleanup

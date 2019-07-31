@@ -86,7 +86,7 @@ class Iso {
   }
 
   /// Kill the isolate
-  void kill() {
+  void _kill() {
     //print("Killing $_isolate");
     _fromIsolateReceivePort.close();
     _fromIsolateErrorPort.close();
@@ -96,7 +96,7 @@ class Iso {
 
   /// Cleanup
   void dispose() {
-    kill();
+    _kill();
     _dataOutIsolate.close();
   }
 }

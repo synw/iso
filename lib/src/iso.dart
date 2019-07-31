@@ -56,7 +56,8 @@ class Iso {
     final runner = IsoRunner(chanOut: _fromIsolateReceivePort.sendPort);
     if (args.isNotEmpty) runner.args = args;
     // run
-    Isolate.spawn(runFunction, runner, onError: _fromIsolateErrorPort.sendPort)
+    await Isolate.spawn(runFunction, runner,
+            onError: _fromIsolateErrorPort.sendPort)
         .then((Isolate _is) {
       _isolate = _is;
       _fromIsolateReceivePort.listen((dynamic data) {
@@ -88,10 +89,12 @@ class Iso {
   /// Kill the isolate
   void _kill() {
     //print("Killing $_isolate");
-    _fromIsolateReceivePort.close();
-    _fromIsolateErrorPort.close();
-    _isolate.kill(priority: Isolate.immediate);
-    _isolate = null;
+    if (_isolate != null) {
+      _fromIsolateReceivePort.close();
+      _fromIsolateErrorPort.close();
+      _isolate.kill(priority: Isolate.immediate);
+      _isolate = null;
+    }
   }
 
   /// Cleanup

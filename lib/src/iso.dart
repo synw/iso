@@ -80,10 +80,9 @@ class Iso {
       //runner.initDataIn();
       return;
     });
-    _comChanCompleter.future.then((_) {
-      _isolateReadyToListenCompleter.complete();
-      _canReceive = true;
-    });
+    await _comChanCompleter.future;
+    _isolateReadyToListenCompleter.complete();
+    _canReceive = true;
   }
 
   /// Kill the isolate

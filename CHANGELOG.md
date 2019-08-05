@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.3
+
+- Downgrade to meta 1.1.6 for Flutter stable compatibility
+- Use pedantic for static analysis
+
 ## 0.2.2
 
 Prevent killing terminated isolate

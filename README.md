@@ -151,3 +151,7 @@ This has to be initialized in the isolate before sending as explained above.
       iso.send("Some data");
    }
    ```
+
+## Examples
+
+Check the [https://github.com/synw/iso/tree/master/example](example) folder to see examples for Dart and Flutter

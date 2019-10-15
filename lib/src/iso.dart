@@ -9,7 +9,7 @@ typedef void IsoOnData(dynamic data);
 class Iso {
   /// If [onDataOut] is not provided the data coming from the isolate
   /// will print to the screen by default
-  Iso(this.runFunction, {this.onDataOut = print, this.onError})
+  Iso(this.runFunction, {this.onDataOut, this.onError})
       : _fromIsolateReceivePort = ReceivePort(),
         _fromIsolateErrorPort = ReceivePort() {
     onDataOut ??= (dynamic data) => null;

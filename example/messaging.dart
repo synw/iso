@@ -33,7 +33,7 @@ Future<void> run(IsoRunner iso) async {
     }
   });
   // send an exist signal after 30 seconds
-  unawaited(Future<dynamic>.delayed(Duration(seconds: 30))
+  unawaited(Future<dynamic>.delayed(const Duration(seconds: 30))
       .then((dynamic _) => iso.send(ExitSignal())));
   // send messages
   var i = 0;
@@ -44,8 +44,9 @@ Future<void> run(IsoRunner iso) async {
   }
 }
 
-void main() async {
-  final iso = Iso(run, onDataOut: null)..run();
+Future<void> main() async {
+  final iso = Iso(run, onDataOut: null);
+  unawaited(iso.run());
   // listen
   iso.dataOut.listen((dynamic data) {
     switch (data is ExitSignal) {
@@ -60,8 +61,8 @@ void main() async {
   // get ready
   await iso.onCanReceive;
   // send messages
-  int i = 0;
-  while (true) {
+  var i = 0;
+  while (i < 1000000000) {
     await Future<dynamic>.delayed(Duration(seconds: _random.nextInt(1 << 2)));
     sendMessage(iso, i);
     i++;

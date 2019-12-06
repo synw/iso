@@ -91,12 +91,6 @@ Handle data coming from the isolate using a handler function:
    final iso = Iso(run, onDataOut: onDataOut);
    ```
 
-If `onDataOut`is not provided it will print the data to the terminal by default. To disable the default behavior set `onDataOut` to null:
-
-   ```dart
-   final iso = Iso(run, onDataOut: null)
-   ```
-
 Another option to handle this data is to listen to a channel:
 
    ```dart

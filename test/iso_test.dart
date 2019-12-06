@@ -1,9 +1,10 @@
 import 'dart:async';
+import 'package:pedantic/pedantic.dart';
 import "package:test/test.dart";
 import 'package:iso/iso.dart';
 
 void run(IsoRunner iso) {
-  int counter = 0;
+  var counter = 0;
   // listen for the data coming in
   iso.receive();
   iso.dataIn.listen((dynamic data) {
@@ -16,8 +17,9 @@ void run(IsoRunner iso) {
 void main() {
   Iso iso;
 
-  final StreamController<int> valueLog = StreamController<int>();
-  //Stream<dynamic> requestLog;
+  final valueLog = StreamController<int>();
+
+  tearDown(valueLog.close);
 
   test("constructor", () {
     iso = Iso(run, onDataOut: (dynamic data) => print("Counter: $data"));
@@ -32,7 +34,7 @@ void main() {
   });
 
   test("run", () async {
-    iso.run();
+    unawaited(iso.run());
     await iso.onCanReceive;
     expect(iso.canReceive, true);
   });
@@ -43,7 +45,7 @@ void main() {
     await Future<void>.delayed(Duration(milliseconds: 200));
     iso.send(1);
     await Future<void>.delayed(Duration(milliseconds: 200));
-    int i = 1;
+    var i = 1;
     valueLog.stream.listen((int v) {
       expect(v, i);
       i++;

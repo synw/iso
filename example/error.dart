@@ -1,15 +1,16 @@
 import 'package:iso/iso.dart';
+import 'package:pedantic/pedantic.dart';
 
-void run(IsoRunner iso) async {
+Future<void> run(IsoRunner iso) async {
   iso.send('Running');
-  throw ("An error has occured");
+  throw Exception("An error has occured");
 }
 
 void onError(dynamic err) {
   print("*** Error in the isolate:");
-  throw (err);
+  throw err;
 }
 
-void main() async {
-  Iso(run, onError: onError)..run();
+Future<void> main() async {
+  unawaited(Iso(run, onError: onError).run());
 }

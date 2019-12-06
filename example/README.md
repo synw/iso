@@ -1,6 +1,6 @@
 # Iso examples
 
-## Dart examples
+## Dart examples
 
 - **Simple**: basic examples
 - **Counter**: a simple counter that runs in an isolate

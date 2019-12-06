@@ -1,7 +1,10 @@
-import 'package:iso/iso.dart';
+import 'dart:async';
 
-void run(IsoRunner iso) async {
-  int counter = 0;
+import 'package:iso/iso.dart';
+import 'package:pedantic/pedantic.dart';
+
+Future<void> run(IsoRunner iso) async {
+  var counter = 0;
   iso.receive();
   iso.dataIn.listen((dynamic data) {
     counter = counter + int.parse(data.toString());
@@ -10,12 +13,9 @@ void run(IsoRunner iso) async {
   });
 }
 
-void main() async {
+Future<void> main() async {
   final iso = Iso(run, onDataOut: (dynamic data) => print("Counter: $data"));
-  iso.run();
+  unawaited(iso.run());
   await iso.onCanReceive;
-  while (true) {
-    await Future<dynamic>.delayed(Duration(seconds: 1));
-    iso.send(1);
-  }
+  Timer.periodic(const Duration(seconds: 1), (_) => iso.send(1));
 }

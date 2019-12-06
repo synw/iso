@@ -1,7 +1,9 @@
-import "dart:math";
-import 'dart:io';
 import 'dart:async';
+import 'dart:io';
+import "dart:math";
+
 import 'package:iso/iso.dart';
+import 'package:pedantic/pedantic.dart';
 
 final _random = Random();
 
@@ -18,24 +20,24 @@ class CustomPayload {
 
 class ExitSignal {}
 
-void run(IsoRunner iso) async {
-  iso.receive()
-    ..listen((dynamic data) {
-      if (data is int)
-        print("Received integer: $data");
-      else if (data is String)
-        print("Received string: $data");
-      else if (data is CustomPayload)
-        print("Reveived custom payload: $data");
-      else
-        print("Unknown data type: $data");
-    });
+Future<void> run(IsoRunner iso) async {
+  iso.receive().listen((dynamic data) {
+    if (data is int) {
+      print("Received integer: $data");
+    } else if (data is String) {
+      print("Received string: $data");
+    } else if (data is CustomPayload) {
+      print("Reveived custom payload: $data");
+    } else {
+      print("Unknown data type: $data");
+    }
+  });
   // send an exist signal after 30 seconds
-  Future<dynamic>.delayed(Duration(seconds: 30))
-      .then((dynamic _) => iso.send(ExitSignal()));
+  unawaited(Future<dynamic>.delayed(Duration(seconds: 30))
+      .then((dynamic _) => iso.send(ExitSignal())));
   // send messages
-  int i = 0;
-  while (true) {
+  var i = 0;
+  while (i < 10000000) {
     await Future<dynamic>.delayed(Duration(seconds: _random.nextInt(1 << 2)));
     sendMessage(iso, i);
     i++;

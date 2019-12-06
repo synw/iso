@@ -1,9 +1,11 @@
-import "dart:isolate";
 import 'dart:async';
+import "dart:isolate";
+
+import 'exceptions.dart';
 import 'runner.dart';
 
 /// Data processing function type
-typedef void IsoOnData(dynamic data);
+typedef IsoOnData = void Function(dynamic data);
 
 /// The isolate runner class
 class Iso {
@@ -13,7 +15,8 @@ class Iso {
       : _fromIsolateReceivePort = ReceivePort(),
         _fromIsolateErrorPort = ReceivePort() {
     onDataOut ??= (dynamic data) => null;
-    onError ??= (dynamic err) => throw ("Error in isolate:\n $err");
+    onError ??=
+        (dynamic err) => throw IsolateRuntimeError("Error in isolate:\n $err");
   }
 
   /// The function to run in the isolate
@@ -26,8 +29,8 @@ class Iso {
   IsoOnData onError;
 
   Isolate _isolate;
-  ReceivePort _fromIsolateReceivePort;
-  ReceivePort _fromIsolateErrorPort;
+  final ReceivePort _fromIsolateReceivePort;
+  final ReceivePort _fromIsolateErrorPort;
   SendPort _toIsolateSendPort;
   final StreamController<dynamic> _dataOutIsolate = StreamController<dynamic>();
   final Completer _isolateReadyToListenCompleter = Completer<void>();
@@ -51,7 +54,7 @@ class Iso {
   /// Run the isolate
   Future<void> run([List<dynamic> args = const <dynamic>[]]) async {
     //print("I > run");
-    final Completer<void> _comChanCompleter = Completer<void>();
+    final _comChanCompleter = Completer<void>();
     // set runner config
     final runner = IsoRunner(chanOut: _fromIsolateReceivePort.sendPort);
     if (args.isNotEmpty) runner.args = args;

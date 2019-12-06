@@ -1,4 +1,5 @@
 import 'dart:isolate';
+
 import 'package:meta/meta.dart';
 
 /// The isolate runner

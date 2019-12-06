@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.0
+
+- Set the default for the `onDataOut` method to null
+- Update dependencies
+- Use more strict analysis options
+
 ## 0.2.3
 
 - Downgrade to meta 1.1.6 for Flutter stable compatibility

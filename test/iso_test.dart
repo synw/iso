@@ -19,36 +19,41 @@ void main() {
 
   final valueLog = StreamController<int>();
 
-  tearDown(valueLog.close);
-
   test("constructor", () {
     iso = Iso(run, onDataOut: (dynamic data) => print("Counter: $data"));
     expect(iso is Iso, true);
     expect(iso == null, false);
+    return;
   });
 
   test("listen logs", () {
     iso.dataOut.listen((dynamic data) {
       valueLog.sink.add(data as int);
     });
+    return;
   });
 
   test("run", () async {
     unawaited(iso.run());
     await iso.onCanReceive;
     expect(iso.canReceive, true);
+    return;
   });
 
   test("send", () async {
     assert(iso.canReceive);
     iso.send(1);
-    await Future<void>.delayed(Duration(milliseconds: 200));
+    await Future<void>.delayed(const Duration(milliseconds: 200));
     iso.send(1);
-    await Future<void>.delayed(Duration(milliseconds: 200));
+    await Future<void>.delayed(const Duration(milliseconds: 200));
     var i = 1;
     valueLog.stream.listen((int v) {
       expect(v, i);
       i++;
+      if (i > 2) {
+        valueLog.close();
+        return;
+      }
     });
   });
 }

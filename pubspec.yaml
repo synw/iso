@@ -1,17 +1,18 @@
 name: iso
-description: An isolates runner that handles bidirectionnal communication. Run some code in an isolate and communicate with it
+description: An isolates runner that handles bidirectionnal communication. Run
+  some code in an isolate and communicate with it
 author: synw <ansterj@gmail.com>
 homepage: https://github.com/synw/iso
-version: 0.3.0
+version: 0.4.0
 
 environment:
   sdk: ">=2.3.0 <3.0.0"
 
 dependencies:
-  meta: ^1.1.8
-  pedantic: ^1.8.0
-  extra_pedantic: ^1.1.1+3
+  extra_pedantic: ^1.2.0
+  meta: ^1.2.4
+  pedantic: ^1.9.2
 
 dev_dependencies:
-  test: ^1.6.5
-  test_coverage: ^0.3.0+1
+  test: ^1.15.7
+  test_coverage: ^0.5.0

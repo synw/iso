@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.0
+
+Update dependencies
+
 ## 0.3.0
 
 - Set the default for the `onDataOut` method to null

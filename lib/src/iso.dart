@@ -23,15 +23,15 @@ class Iso {
   final void Function(IsoRunner) runFunction;
 
   /// The handler for the data coming from the isolate
-  IsoOnData onDataOut;
+  IsoOnData? onDataOut;
 
   /// The handler for the errors coming from the isolate
-  IsoOnData onError;
+  IsoOnData? onError;
 
-  Isolate _isolate;
+  Isolate? _isolate;
   final ReceivePort _fromIsolateReceivePort;
   final ReceivePort _fromIsolateErrorPort;
-  SendPort _toIsolateSendPort;
+  SendPort? _toIsolateSendPort;
   final StreamController<dynamic> _dataOutIsolate = StreamController<dynamic>();
   final Completer _isolateReadyToListenCompleter = Completer<void>();
   bool _canReceive = false;
@@ -48,7 +48,7 @@ class Iso {
   /// Send data to the isolate
   void send(dynamic data) {
     assert(_toIsolateSendPort != null);
-    _toIsolateSendPort.send(data);
+    _toIsolateSendPort!.send(data);
   }
 
   /// Run the isolate
@@ -71,13 +71,13 @@ class Iso {
         } else {
           //print("I > DATA OUT $data");
           _dataOutIsolate.sink.add(data);
-          onDataOut(data);
+          onDataOut!(data);
         }
       }, onError: (dynamic err) {
         _fromIsolateErrorPort.sendPort.send(err);
       });
       _fromIsolateErrorPort.listen((dynamic err) {
-        onError(err);
+        onError!(err);
       });
       //print("I > init data in");
       //runner.initDataIn();
@@ -94,7 +94,7 @@ class Iso {
     if (_isolate != null) {
       _fromIsolateReceivePort.close();
       _fromIsolateErrorPort.close();
-      _isolate.kill(priority: Isolate.immediate);
+      _isolate!.kill(priority: Isolate.immediate);
       _isolate = null;
     }
   }

@@ -10,9 +10,9 @@ final _random = Random();
 class CustomPayload {
   CustomPayload({this.number, this.name, this.data});
 
-  final int number;
-  final String name;
-  final Map<String, dynamic> data;
+  final int? number;
+  final String? name;
+  final Map<String, dynamic>? data;
 
   @override
   String toString() => "$number $name $data";

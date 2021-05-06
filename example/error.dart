@@ -8,7 +8,8 @@ Future<void> run(IsoRunner iso) async {
 
 void onError(dynamic err) {
   print("*** Error in the isolate:");
-  throw err;
+  // ignore: only_throw_errors
+  throw err as Object;
 }
 
 Future<void> main() async {

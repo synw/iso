@@ -7,7 +7,7 @@ void run(IsoRunner iso) {
   var counter = 0;
   // listen for the data coming in
   iso.receive();
-  iso.dataIn.listen((dynamic data) {
+  iso.dataIn!.listen((dynamic data) {
     counter = counter + int.parse(data.toString());
     // send into the main thread
     iso.send(counter);
@@ -15,9 +15,9 @@ void run(IsoRunner iso) {
 }
 
 void main() {
-  Iso iso;
+  Iso? iso;
 
-  final valueLog = StreamController<int>();
+  final valueLog = StreamController<int?>();
 
   test("constructor", () {
     iso = Iso(run, onDataOut: (dynamic data) => print("Counter: $data"));
@@ -27,27 +27,27 @@ void main() {
   });
 
   test("listen logs", () {
-    iso.dataOut.listen((dynamic data) {
-      valueLog.sink.add(data as int);
+    iso!.dataOut.listen((dynamic data) {
+      valueLog.sink.add(data as int?);
     });
     return;
   });
 
   test("run", () async {
-    unawaited(iso.run());
-    await iso.onCanReceive;
-    expect(iso.canReceive, true);
+    unawaited(iso!.run());
+    await iso!.onCanReceive;
+    expect(iso!.canReceive, true);
     return;
   });
 
   test("send", () async {
-    assert(iso.canReceive);
-    iso.send(1);
+    assert(iso!.canReceive);
+    iso!.send(1);
     await Future<void>.delayed(const Duration(milliseconds: 200));
-    iso.send(1);
+    iso!.send(1);
     await Future<void>.delayed(const Duration(milliseconds: 200));
     var i = 1;
-    valueLog.stream.listen((int v) {
+    valueLog.stream.listen((int? v) {
       expect(v, i);
       i++;
       if (i > 2) {

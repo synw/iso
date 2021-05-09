@@ -6,7 +6,7 @@ import 'package:pedantic/pedantic.dart';
 Future<void> run(IsoRunner iso) async {
   var counter = 0;
   iso.receive();
-  iso.dataIn.listen((dynamic data) {
+  iso.dataIn!.listen((dynamic data) {
     counter = counter + int.parse(data.toString());
     // send into the main thread
     iso.send(counter);

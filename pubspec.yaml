@@ -3,7 +3,7 @@ description: An isolates runner that handles bidirectionnal communication. Run
   some code in an isolate and communicate with it
 author: synw <ansterj@gmail.com>
 homepage: https://github.com/synw/iso
-version: 0.5.0
+version: 1.0.0
 
 environment:
   sdk: '>=2.12.0 <3.0.0'
